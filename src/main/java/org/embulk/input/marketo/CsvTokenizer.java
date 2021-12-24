@@ -3,25 +3,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Preconditions;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.embulk.config.Config;
-import org.embulk.config.ConfigDefault;
-import org.embulk.config.ConfigException;
-import org.embulk.spi.DataException;
-import org.embulk.spi.Exec;
-import org.embulk.spi.util.LineDecoder;
-import org.slf4j.Logger;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import org.embulk.config.ConfigException;
 import org.embulk.spi.DataException;
 import org.embulk.util.config.Config;
@@ -32,6 +13,7 @@ import org.embulk.util.text.Newline;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,12 +21,18 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+
 /**
  * Created by tai.khuu on 9/15/17.
  */
 public class CsvTokenizer {
-    private static final Logger LOGGER = Exec.getLogger(CsvTokenizer.class);
-
     static enum RecordState {
         NOT_END, END,
     }
@@ -160,7 +148,7 @@ public class CsvTokenizer {
             File file = new File(path);
             FileWriter filewriter = new FileWriter(file);
 
-            LOGGER.info("create tmp file: " + path);
+            LoggerFactory.getLogger(CsvTokenizer.class).info("create tmp file: " + path);
 
             BufferedReader b = new BufferedReader(inputStream);
             String line = b.readLine();
@@ -174,7 +162,7 @@ public class CsvTokenizer {
                 filewriter.write("\r\n");
                 count += 1;
                 if(count % 10000 == 0) {
-                    LOGGER.info("import record count: " + count);
+                    LoggerFactory.getLogger(CsvTokenizer.class).info("import record count: " + count);
                 }
             }
             filewriter.close();
